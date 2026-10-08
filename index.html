@@ -13,15 +13,33 @@
     <link rel="stylesheet" href="assets/style.css" />
   </head>
   <body>
+    <nav class="topnav" aria-label="Sections">
+      <div class="topnav-in">
+        <a class="brand" href="">Nepal Chess Stats</a>
+        <div class="links">
+        <a href="" aria-current="page">Home</a>
+        <a href="olympiad/">Olympiad</a>
+        <a href="youth/">Youth</a>
+        </div>
+      </div>
+    </nav>
     <main class="wrap">
       <div class="hero">
         <h1>Nepal Chess Stats</h1>
-        <p class="subtitle">Data dashboards on Nepali chess.</p>
+        <p class="subtitle">Dashboards on Nepali chess, built from FIDE and Olympiad records. Pick a section.</p>
       </div>
-      <ul>
-        <li><a href="olympiad/">Nepal at the Chess Olympiad</a>: every appearance since 2004, open and women's sections</li>
-        <li><a href="youth/">Youth players</a>: FIDE-rated Nepali players, U7 to U20</li>
-      </ul>
+      <div class="cards">
+        <a class="card" href="olympiad/">
+          <h2>Nepal at the Chess Olympiad</h2>
+          <p>Every over-the-board appearance since the 2004 debut, open and women's sections: results, squads and players.</p>
+          <span class="go">Open dashboard →</span>
+        </a>
+        <a class="card" href="youth/">
+          <h2>Youth players, U7 to U20</h2>
+          <p>Every FIDE-registered Nepali player in a youth category, with ratings by age group and a downloadable list.</p>
+          <span class="go">Open dashboard →</span>
+        </a>
+      </div>
     </main>
   </body>
 </html>
