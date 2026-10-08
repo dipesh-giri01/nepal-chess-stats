@@ -10,6 +10,11 @@
   --taupe: #8d7663;
   --muted: #6a645c;
   --hair: #d1c6b8;
+  --nav-h: 52px;
+}
+
+html {
+  scroll-padding-top: calc(var(--nav-h) + 80px); /* clear navbar + sticky filter bar */
 }
 
 * {
@@ -108,7 +113,7 @@ h2 {
 
 .filter-bar {
   position: sticky;
-  top: 0;
+  top: var(--nav-h);
   z-index: 20;
   display: flex;
   flex-wrap: wrap;
@@ -409,7 +414,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 52px;
+  height: var(--nav-h);
 }
 
 .topnav a {

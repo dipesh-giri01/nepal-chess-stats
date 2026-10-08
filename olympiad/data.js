@@ -5,30 +5,30 @@ const trend = {
     rating: [
       2170.6, 2180.2, 2021.8, 2068.2, 2013.6, 2035.0, 2046.8, 2094.6, 2082.6, 2085.8, 2051.4,
     ],
-    rank: [105, 101, 108, 107, 113, 114, 120, 111, 86, 112, 126],
+    rank: [105, 101, 108, 107, 113, 114, 120, 111, 86, 112, 107],
   },
   women: {
     age: [null, null, null, null, null, 19.6, 24.8, 24.8, 24.6, 27.6, 25.2],
     rating: [null, null, null, null, null, 1646.8, 1625.4, 1530.0, 1549.4, 1692.0, 1642.0],
-    rank: [null, null, null, null, null, 115, 113, 117, 94, 119, 130],
+    rank: [null, null, null, null, null, 115, 113, 117, 94, 119, 119],
   },
 };
 const comparison = {
   open: {
-    editions_competed: 9,
-    avg_age: 35.3,
-    avg_rating: 2079.3,
+    editions_competed: 10,
+    avg_age: 34.7,
+    avg_rating: 2076.5,
     best_rank: 86,
     worst_rank: 120,
     avg_rank: 107.2,
   },
   women: {
-    editions_competed: 4,
-    avg_age: 23.5,
-    avg_rating: 1587.9,
+    editions_competed: 5,
+    avg_age: 23.8,
+    avg_rating: 1598.7,
     best_rank: 94,
-    worst_rank: 117,
-    avg_rank: 109.8,
+    worst_rank: 119,
+    avg_rank: 111.6,
   },
 };
 const continuity = {
@@ -43,7 +43,7 @@ const continuity = {
     { year: 2018, returning: 0, new: 5, squad_size: 5, participation: 'competed' },
     { year: 2022, returning: 2, new: 3, squad_size: 5, participation: 'competed' },
     { year: 2024, returning: 3, new: 2, squad_size: 5, participation: 'registered_only' },
-    { year: 2026, returning: 3, new: 2, squad_size: 5, participation: 'provisional' },
+    { year: 2026, returning: 3, new: 2, squad_size: 5, participation: 'competed' },
   ],
   women: [
     { year: 2014, returning: 0, new: 5, squad_size: 5, participation: 'competed' },
@@ -51,6 +51,6 @@ const continuity = {
     { year: 2018, returning: 3, new: 2, squad_size: 5, participation: 'competed' },
     { year: 2022, returning: 1, new: 4, squad_size: 5, participation: 'competed' },
     { year: 2024, returning: 2, new: 3, squad_size: 5, participation: 'registered_only' },
-    { year: 2026, returning: 3, new: 2, squad_size: 5, participation: 'provisional' },
+    { year: 2026, returning: 3, new: 2, squad_size: 5, participation: 'competed' },
   ],
 };

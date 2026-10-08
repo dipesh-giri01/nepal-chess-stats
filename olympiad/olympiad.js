@@ -52,22 +52,22 @@ const show = (s) => sectionFilter === 'all' || sectionFilter === s;
 function renderScoreboard() {
   const boards = {
     all: [
-      { num: '9', label: 'Open editions competed, 2004\u20132022' },
+      { num: '10', label: 'Open editions competed, 2004\u20132026' },
       { num: '86th', label: 'Best-ever finish, Open, 2022 Chennai' },
       { num: '45', label: 'Unique players across the whole record' },
       { num: '19', label: 'Players with more than one appearance' },
     ],
     open: [
-      { num: '9', label: 'Open editions competed, 2004\u20132022' },
+      { num: '10', label: 'Open editions competed, 2004\u20132026' },
       { num: '86th', label: 'Best-ever finish, 2022 Chennai' },
       { num: '107.2', label: 'Average final rank across competed editions' },
-      { num: '2079', label: 'Average squad rating' },
+      { num: '2076', label: 'Average squad rating' },
     ],
     women: [
-      { num: '4', label: 'Women editions competed, 2014\u20132022' },
+      { num: '5', label: 'Women editions competed, 2014\u20132026' },
       { num: '94th', label: 'Best-ever finish, 2022 Chennai' },
-      { num: '109.8', label: 'Average final rank across competed editions' },
-      { num: '1588', label: 'Average squad rating' },
+      { num: '111.6', label: 'Average final rank across competed editions' },
+      { num: '1599', label: 'Average squad rating' },
     ],
   };
   document.getElementById('scoreboard').innerHTML = boards[sectionFilter]
@@ -79,10 +79,10 @@ function renderScoreboard() {
 }
 
 // ---- trend chart ----
-const yearLabels = trend.years.map((y) => (y === 2024 || y === 2026 ? y + '*' : String(y)));
-const provisionalFromIdx = trend.years.indexOf(2024) - 1;
+const yearLabels = trend.years.map((y) => (y === 2024 ? y + '*' : String(y)));
+const unplayedIdx = trend.years.indexOf(2024);
 function dashSeg(ctx) {
-  return ctx.p0DataIndex >= provisionalFromIdx ? [5, 4] : undefined;
+  return ctx.p0DataIndex === unplayedIdx || ctx.p1DataIndex === unplayedIdx ? [5, 4] : undefined;
 }
 let trendMetric = 'age';
 
@@ -255,8 +255,6 @@ function contChart(elId, data) {
               const d = data[items[0].dataIndex];
               if (d.participation === 'registered_only')
                 return 'Registered but did not travel (visa)';
-              if (d.participation === 'provisional')
-                return 'Provisional squad, Samarkand starts 16 Sep 2026';
               return null;
             },
           },
@@ -288,7 +286,7 @@ contChart('contOpenChart', continuity.open);
 contChart('contWomenChart', continuity.women);
 
 const continuityInsights = {
-  all: "Open: 2018 fielded five entirely new players, nobody from 2016, and still finished better (111th) than the 2016 squad that had kept two starters (120th). The 2022 breakthrough (86th) came with three new faces out of five. Women: the most continuous squad, 2018 with three returners, finished worse (117th) than 2016's two-returner side (113th). Their best result, 94th in 2022, came with four newcomers out of five. Turnover is not what is holding Nepal back. 2024* never traveled (visa); 2026* is provisional for Samarkand.",
+  all: "Open: 2018 fielded five entirely new players, nobody from 2016, and still finished better (111th) than the 2016 squad that had kept two starters (120th). The 2022 breakthrough (86th) came with three new faces out of five. Women: the most continuous squad, 2018 with three returners, finished worse (117th) than 2016's two-returner side (113th). Their best result, 94th in 2022, came with four newcomers out of five. Samarkand 2026 kept three of five in both sections: the Open side finished 107th, the Women 119th. Turnover is not what is holding Nepal back. 2024* never traveled (visa).",
   open: "2018's Open squad was five entirely new players, no one who played 2016, and it still placed better (111th) than the 2016 squad that had kept two starters (120th). 2022's breakthrough (86th, best ever) came with three new faces out of five. Continuity does not track results here.",
   women:
     "2018's Women's squad kept three players from 2016, the highest continuity in the section, and finished worse (117th) than 2016's two-returner side (113th). The breakthrough year, 2022, brought four new faces out of five and finished 94th, the best Women's result on record. More returners have not meant better finishes.",
@@ -532,7 +530,7 @@ const extremes = [
   {
     year: 2026,
     section: 'open',
-    participation: 'provisional',
+    participation: 'competed',
     oldest_name: 'Subedi Rajan',
     oldest_age: 38.0,
     youngest_name: 'Silwal Purushottam',
@@ -547,7 +545,7 @@ const extremes = [
   {
     year: 2026,
     section: 'women',
-    participation: 'provisional',
+    participation: 'competed',
     oldest_name: 'Joshi Sindira',
     oldest_age: 44.0,
     youngest_name: 'Shrestha Nihana',
@@ -640,10 +638,10 @@ function renderExtremes() {
     },
   });
   const ageText = {
-    all: "Widest age gap in the whole record: 2026's provisional Women's squad, 13 to 44: Nihana Shrestha to Sindira Joshi, 31 years apart. 2012 Open (Jaiswal Rupesh, 15, to Malakar, 49) is the widest actually-played squad, 34 years.",
-    open: 'Widest Open age gap actually played: 2012, Jaiswal Rupesh (15) to Malakar (49), 34 years. Provisional 2026 Open spans 19 years (Silwal 19 to Subedi 38).',
+    all: "Widest age gap in the whole record: 2012 Open, Jaiswal Rupesh (15) to Malakar (49), 34 years. The 2026 Women's squad in Samarkand came close: Nihana Shrestha (13) and Sindira Joshi (44), 31 years apart, played side by side.",
+    open: 'Widest Open age gap: 2012, Jaiswal Rupesh (15) to Malakar (49), 34 years. The 2026 Open squad spanned 19 years (Silwal 19 to Subedi 38).',
     women:
-      "Widest Women's age gap in the whole record: 2026's provisional squad, 13 to 44: Nihana Shrestha to Sindira Joshi, 31 years. Among competed editions, 2018 spans 21 years (Thapa Khusbu 15 to Joshi Sindira 36).",
+      "Widest Women's age gap: 2026 in Samarkand, 13 to 44: Nihana Shrestha to Sindira Joshi, 31 years. Before that, 2018 spanned 21 years (Thapa Khusbu 15 to Joshi Sindira 36).",
   };
   const ratingText = {
     all: 'Widest rating gap in a competed squad: 2018 Open, 300 points from Rajbhandari Rijendra (1937) to Thing Bibek (2237). Women run almost as wide: 293 points in 2018 (Thapa Khusbu 1411 to Khamboo Monalisha 1704) and 252 in 2016. Thin depth at the top of the national lists shows up as long bars, not as a smooth pack.',
@@ -673,11 +671,13 @@ const seedRows = [
   { year: 2018, section: 'open', seed: 118, final: 111, moved: 7 },
   { year: 2022, section: 'open', seed: 107, final: 86, moved: 21 },
   { year: 2024, section: 'open', seed: 112, final: null },
+  { year: 2026, section: 'open', seed: 126, final: 107, moved: 19 },
   { year: 2014, section: 'women', seed: 100, final: 115, moved: -15 },
   { year: 2016, section: 'women', seed: 109, final: 113, moved: -4 },
   { year: 2018, section: 'women', seed: 116, final: 117, moved: -1 },
   { year: 2022, section: 'women', seed: 101, final: 94, moved: 7 },
   { year: 2024, section: 'women', seed: 119, final: null },
+  { year: 2026, section: 'women', seed: 130, final: 119, moved: 11 },
 ].filter((r) => r.final !== null);
 
 let seedChart;
@@ -747,10 +747,10 @@ function renderSeed() {
     },
   });
   const seedInsights = {
-    all: "Nepal's Open team beat its seeding in all 7 editions with usable data, by an average of 13 places, including a 24-place jump in 2008 (seeded 132nd, finished 108th). The Women's section is mixed across 4 editions: \u221215 in 2014, \u22124 in 2016, \u22121 in 2018, then +7 in 2022. 2004 and 2006 Open remain the only competed editions without a clean seed-versus-finish pair here.",
-    open: 'Open beat its seeding in all 7 editions with usable data, by an average of 13 places, including a 24-place jump in 2008 (seeded 132nd, finished 108th).',
+    all: "Nepal's Open team beat its seeding in all 8 editions with usable data, by an average of 14 places, including a 24-place jump in 2008 (seeded 132nd, finished 108th) and 19 places in 2026 (126th to 107th). The Women's section started below its seeding (\u221215 in 2014, \u22124 in 2016, \u22121 in 2018) and has beaten it since: +7 in 2022, then +11 in 2026, its biggest jump. 2004 and 2006 Open remain the only competed editions without a clean seed-versus-finish pair here.",
+    open: 'Open beat its seeding in all 8 editions with usable data, by an average of 14 places, including a 24-place jump in 2008 (seeded 132nd, finished 108th) and 19 places in 2026 (126th to 107th).',
     women:
-      "Women's seeding record is mixed across 4 editions: \u221215 in 2014, \u22124 in 2016, \u22121 in 2018, then +7 in 2022.",
+      "Women's seeding record: \u221215 in 2014, \u22124 in 2016, \u22121 in 2018, then +7 in 2022 and +11 in 2026 (seeded 130th, finished 119th), the section's biggest jump.",
   };
   document.getElementById('seed-insight').textContent = seedInsights[sectionFilter];
 }
@@ -777,8 +777,8 @@ const fieldData = [
   { year: 2022, section: 'women', nations: 160, teams: 162, nepal_rank: 94, percentile: 42.6 },
   { year: 2024, section: 'open', nations: 195, teams: 197, nepal_rank: null },
   { year: 2024, section: 'women', nations: 181, teams: 183, nepal_rank: null },
-  { year: 2026, section: 'open', nations: 205, teams: 208, nepal_rank: null },
-  { year: 2026, section: 'women', nations: 188, teams: 192, nepal_rank: null },
+  { year: 2026, section: 'open', nations: 204, teams: 206, nepal_rank: 107, percentile: 48.5 },
+  { year: 2026, section: 'women', nations: 187, teams: 189, nepal_rank: 119, percentile: 37.6 },
 ];
 
 const fieldYears = [...new Set(fieldData.map((r) => r.year))].sort((a, b) => a - b);
@@ -792,7 +792,7 @@ const fieldWomen = fieldYears.map(
 const fieldChart = new Chart(document.getElementById('fieldChart'), {
   type: 'bar',
   data: {
-    labels: fieldYears.map((y) => (y === 2026 ? y + '*' : String(y))),
+    labels: fieldYears.map(String),
     datasets: [
       {
         label: 'Open',
@@ -850,10 +850,10 @@ function updateField() {
   fieldChart.getDatasetMeta(1).hidden = !show('women');
   fieldChart.update();
   const fieldInsights = {
-    all: "The Open field grew from 129 teams (2004) to a provisional 208 (2026 Samarkand), a 61% increase. The Women's field grew even faster, from 87 to a provisional 192, more than doubling.",
-    open: 'The Open field grew from 129 teams (2004) to a provisional 208 (2026 Samarkand), a 61% increase.',
+    all: "The Open field grew from 129 teams (2004) to 206 (2026 Samarkand), a 60% increase. The Women's field grew even faster, from 87 to 189, more than doubling.",
+    open: 'The Open field grew from 129 teams (2004) to 206 (2026 Samarkand), a 60% increase.',
     women:
-      "The Women's field grew from 87 teams (2004) to a provisional 192 (2026), more than doubling.",
+      "The Women's field grew from 87 teams (2004) to 189 (2026), more than doubling.",
   };
   document.getElementById('field-insight').textContent = fieldInsights[sectionFilter];
 }
@@ -938,10 +938,10 @@ function updatePercentile() {
   percentileChart.getDatasetMeta(1).hidden = !show('women');
   percentileChart.update();
   const pctInsights = {
-    all: "On this measure the story is cleaner than raw rank suggested: Open climbs fairly steadily from the 19th percentile (2004) to the 55th (2022), finishing in the top half of the field for the first time. Women's section is more volatile: 16th percentile in the 2014 debut, up to 43rd by 2022.",
-    open: 'Open climbs fairly steadily from the 19th percentile (2004) to the 55th (2022), finishing in the top half of the field for the first time.',
+    all: "On this measure the story is cleaner than raw rank suggested: Open climbs fairly steadily from the 19th percentile (2004) to the 55th (2022), its first top-half finish, and held near the middle at the 49th in 2026. Women's section is more volatile: 16th percentile in the 2014 debut, up to 43rd by 2022, then 38th in 2026.",
+    open: 'Open climbs fairly steadily from the 19th percentile (2004) to the 55th (2022), its first top-half finish, and held near the middle at the 49th in Samarkand 2026.',
     women:
-      "Women's percentile is more volatile: 16th in the 2014 debut, then 21st (2016), 23rd (2018), and 43rd by 2022.",
+      "Women's percentile is more volatile: 16th in the 2014 debut, then 21st (2016), 23rd (2018), 43rd (2022) and 38th (2026).",
   };
   document.getElementById('percentile-insight').textContent = pctInsights[sectionFilter];
 }
@@ -1067,8 +1067,8 @@ function renderCaps() {
     },
   });
   const capsInsights = {
-    all: "Keshav Shrestha still leads with 6, all played between 2004 and 2016. Shrestha Bilam Lal and Jaiswal Rupesh tie for second at 4, and Jaiswal's 4th only counts because the 2026 squad is included, his run would otherwise stop at 2022. Khamboo Monalisha, Joshi Sindira and Lohani Sujana share the top of the Women's section at 3 each.",
-    open: "Keshav Shrestha leads Open with 6 appearances (2004\u20132016). Shrestha Bilam Lal and Jaiswal Rupesh tie at 4; Jaiswal's 4th counts the 2026 provisional squad.",
+    all: "Keshav Shrestha still leads with 6, all played between 2004 and 2016. Shrestha Bilam Lal and Jaiswal Rupesh tie for second at 4, Jaiswal's 4th came in Samarkand 2026. Khamboo Monalisha, Joshi Sindira and Lohani Sujana share the top of the Women's section at 3 each.",
+    open: "Keshav Shrestha leads Open with 6 appearances (2004\u20132016). Shrestha Bilam Lal and Jaiswal Rupesh tie at 4; Jaiswal's 4th came in 2026.",
     women:
       "Khamboo Monalisha, Joshi Sindira and Lohani Sujana share the top of the Women's section at 3 appearances each.",
   };
