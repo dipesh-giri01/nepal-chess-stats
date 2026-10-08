@@ -34,8 +34,15 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   $('rated').options[1].textContent = `Rated (≥${MIN})`;
 
   const fide = (id) => 'https://ratings.fide.com/profile/' + encodeURIComponent(id);
-  const best = (p) => Math.max(p.std || 0, p.rapid || 0, p.blitz || 0);
-  const rated = (p) => best(p) >= MIN;
+  // rating format picked in the filter bar; 'best' = highest of the three
+  const FORMATS = {
+    best: ['in any format', (p) => Math.max(p.std || 0, p.rapid || 0, p.blitz || 0)],
+    std: ['in standard', (p) => p.std || 0],
+    rapid: ['in rapid', (p) => p.rapid || 0],
+    blitz: ['in blitz', (p) => p.blitz || 0],
+  };
+  const rating = (p) => FORMATS[$('fmt').value][1](p);
+  const rated = (p) => rating(p) >= MIN;
   const fmt = (v) => (typeof v === 'number' ? v.toLocaleString() : v);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const years = (n, i) => {
@@ -63,13 +70,18 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   }
   const byCat = (list) => CATS.map((n) => list.filter((p) => p.cat === n));
 
-  // ---- summary table (always all players; it is the reference) ----
-  const rows = byCat(ALL).map((l, i) => ({ Category: labels[i], 'Birth years': years(CATS[i], i), ...stats(l) }));
-  const total = { Category: 'Total', 'Birth years': '', ...stats(ALL) };
+  // ---- summary table (all players, both sexes; follows the rating format) ----
+  const summary = () => [
+    ...byCat(ALL).map((l, i) => ({ Category: labels[i], 'Birth years': years(CATS[i], i), ...stats(l) })),
+    { Category: 'Total', 'Birth years': '', ...stats(ALL) },
+  ];
   const tr = (r) => '<tr>' + Object.values(r).map((v, i) => `<td${i > 1 ? ' class="num"' : ''}>${fmt(v)}</td>`).join('') + '</tr>';
   const sumBody = document.querySelector('#summary tbody');
-  sumBody.innerHTML = rows.map(tr).join('');
-  document.querySelector('#summary tfoot').innerHTML = tr(total);
+  function renderSummary() {
+    const rows = summary();
+    sumBody.innerHTML = rows.slice(0, -1).map(tr).join('');
+    document.querySelector('#summary tfoot').innerHTML = tr(rows.at(-1));
+  }
 
   // ---- charts ----
   const pickCat = (i) => {
@@ -133,7 +145,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
 
     const bands = {};
     for (const p of list.filter(rated)) {
-      const b = Math.floor(best(p) / 100) * 100;
+      const b = Math.floor(rating(p) / 100) * 100;
       bands[b] = (bands[b] || 0) + 1;
     }
     const keys = Object.keys(bands).map(Number).sort((a, b) => a - b);
@@ -145,13 +157,15 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     // scoreboard + insights follow the filter
     const s = stats(list);
     const biggest = groups.reduce((m, l, i) => (l.length > groups[m].length ? i : m), 0);
-    const top = list.reduce((m, p) => (!m || best(p) > best(m) ? p : m), null);
+    const top = list.reduce((m, p) => (!m || rating(p) > rating(m) ? p : m), null);
+    const inFmt = FORMATS[$('fmt').value][0];
+    document.querySelectorAll('.fmtname').forEach((e) => (e.textContent = inFmt));
     const who = sex === 'F' ? 'girls' : sex === 'M' ? 'boys' : 'youth players';
     $('scoreboard').innerHTML = [
       [fmt(s.Total), `NEP ${who} on the FIDE list`],
-      [fmt(s.Rated), `rated ${MIN}+ in at least one format`],
+      [fmt(s.Rated), `rated ${MIN}+ ${inFmt}`],
       [sex ? Math.round((100 * s.Total) / ALL.length) + '%' : fmt(s.Girls), sex ? 'of all youth players' : 'girls'],
-      [top ? best(top) : '–', top ? `top rating, ${esc(top.name)} (U${top.cat})` : 'top rating'],
+      [top && rating(top) ? rating(top) : '–', top && rating(top) ? `top rating ${inFmt}, ${esc(top.name)} (U${top.cat})` : 'top rating'],
     ].map(([n, l]) => `<div class="stat"><div class="stat-num">${n}</div><div class="stat-label">${l}</div></div>`).join('');
 
     $('cat-insight').textContent = s.Total
@@ -159,7 +173,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
         (sex ? '' : ` Girls make up ${Math.round((100 * s.Girls) / s.Total)}% overall.`)
       : '';
     $('rated-insight').textContent = s.Total
-      ? `${Math.round((100 * s.Rated) / s.Total)}% of ${who} hold a ${MIN}+ rating; most of the rest are registered but have no rating yet.`
+      ? `${Math.round((100 * s.Rated) / s.Total)}% of ${who} hold a ${MIN}+ rating ${inFmt}; most of the rest are registered but have no rating yet.`
       : '';
   }
 
@@ -171,7 +185,8 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     const q = $('q').value.trim().toLowerCase(), sex = $('sex').value, rt = $('rated').value;
     const cat = $('cat').value ? +$('cat').value : null;
     const list = ALL.filter((p) => (cat === null || p.cat === cat) && (!sex || p.sex === sex) &&
-      (!rt || rated(p) === (rt === '1')) && (!q || p.name.toLowerCase().includes(q) || p.id.includes(q)));
+      (!rt || rated(p) === (rt === '1')) && (!q || p.name.toLowerCase().includes(q) || p.id.includes(q)))
+      .sort((a, b) => a.cat - b.cat || rating(b) - rating(a)); // stable: ties keep name order
     $('ptitle').textContent = (cat === null ? 'All youth players' : `U${cat} players`) + ` (${list.length.toLocaleString()})`;
     document.querySelector('#players tbody').innerHTML = list.slice(0, shown).map((p, i) => {
       const a = (t) => `<a href="${fide(p.id)}" target="_blank" rel="noopener">${esc(t)}</a>`;
@@ -188,16 +203,17 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   $('q').oninput = fresh;
   $('cat').onchange = $('rated').onchange = fresh;
   $('sex').onchange = () => { renderCharts(); fresh(); };
+  $('fmt').onchange = () => { renderCharts(); renderSummary(); fresh(); };
   $('reset').onclick = () => { for (const id of ['q', 'cat', 'rated']) $(id).value = ''; fresh(); };
 
   // ---- Excel export ----
   $('dl').onclick = () => {
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([...rows, total]), 'Summary');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summary()), 'Summary');
     for (const n of CATS) {
       const list = ALL.filter((p) => p.cat === n).map((p, i) => ({
         '#': i + 1, 'FIDE ID': p.id, Name: p.name, Sex: p.sex, 'Birth year': p.by, Title: p.title,
-        Standard: p.std ?? '', Rapid: p.rapid ?? '', Blitz: p.blitz ?? '', [`Rated (≥${MIN})`]: rated(p) ? 'Yes' : 'No', 'FIDE profile': fide(p.id),
+        Standard: p.std ?? '', Rapid: p.rapid ?? '', Blitz: p.blitz ?? '', [`Rated (≥${MIN} ${FORMATS[$('fmt').value][0]})`]: rated(p) ? 'Yes' : 'No', 'FIDE profile': fide(p.id),
       }));
       const ws = XLSX.utils.json_to_sheet(list);
       list.forEach((_, i) => { const c = ws['K' + (i + 2)]; if (c) c.l = { Target: c.v }; }); // clickable profile column
@@ -206,6 +222,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     XLSX.writeFile(wb, `nepal_youth_categories_${YEAR}.xlsx`);
   };
 
+  renderSummary();
   renderCharts();
   renderPlayers();
 }
