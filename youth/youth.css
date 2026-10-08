@@ -56,15 +56,9 @@ tfoot td {
   border-bottom: 0;
 }
 
-.table-scroll.tall {
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.table-scroll.tall th {
-  position: sticky;
-  top: 0;
-  background: var(--paper);
+.more:not([hidden]) {
+  display: block;
+  margin: 16px auto 0;
 }
 
 #players td {

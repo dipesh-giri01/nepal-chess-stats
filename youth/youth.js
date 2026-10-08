@@ -74,7 +74,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   // ---- charts ----
   const pickCat = (i) => {
     $('cat').value = CATS[i];
-    renderPlayers();
+    fresh();
     $('players-sec').scrollIntoView({ behavior: 'smooth' });
   };
   const onBar = (_, els) => els.length && pickCat(els[0].index);
@@ -165,24 +165,30 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
 
   // ---- player list ----
   $('cat').innerHTML += CATS.map((n) => `<option value="${n}">U${n}</option>`).join('');
+  const STEP = 100; // rows shown per 'Show more' click; the page scrolls, no nested scroll box
+  let shown = STEP;
   function renderPlayers() {
     const q = $('q').value.trim().toLowerCase(), sex = $('sex').value, rt = $('rated').value;
     const cat = $('cat').value ? +$('cat').value : null;
     const list = ALL.filter((p) => (cat === null || p.cat === cat) && (!sex || p.sex === sex) &&
       (!rt || rated(p) === (rt === '1')) && (!q || p.name.toLowerCase().includes(q) || p.id.includes(q)));
     $('ptitle').textContent = (cat === null ? 'All youth players' : `U${cat} players`) + ` (${list.length.toLocaleString()})`;
-    document.querySelector('#players tbody').innerHTML = list.map((p, i) => {
+    document.querySelector('#players tbody').innerHTML = list.slice(0, shown).map((p, i) => {
       const a = (t) => `<a href="${fide(p.id)}" target="_blank" rel="noopener">${esc(t)}</a>`;
       return `<tr><td class="num">${i + 1}</td><td>U${p.cat}</td><td>${a(p.id)}</td><td>${a(p.name)}</td><td>${esc(p.sex)}</td><td class="num">${p.by}</td><td>${esc(p.title)}</td><td class="num">${p.std ?? ''}</td><td class="num">${p.rapid ?? ''}</td><td class="num">${p.blitz ?? ''}</td></tr>`;
     }).join('');
     $('empty').hidden = list.length > 0;
+    $('more').hidden = list.length <= shown;
+    $('more').textContent = `Show more (${Math.min(shown, list.length).toLocaleString()} of ${list.length.toLocaleString()} shown)`;
     [...sumBody.rows].forEach((r, i) => r.classList.toggle('sel', CATS[i] === cat));
   }
   sumBody.addEventListener('click', (e) => { const r = e.target.closest('tr'); if (r) pickCat(r.sectionRowIndex); });
-  $('q').oninput = renderPlayers;
-  $('cat').onchange = $('rated').onchange = renderPlayers;
-  $('sex').onchange = () => { renderCharts(); renderPlayers(); };
-  $('reset').onclick = () => { for (const id of ['q', 'cat', 'rated']) $(id).value = ''; renderPlayers(); };
+  const fresh = () => { shown = STEP; renderPlayers(); };
+  $('more').onclick = () => { shown += STEP; renderPlayers(); };
+  $('q').oninput = fresh;
+  $('cat').onchange = $('rated').onchange = fresh;
+  $('sex').onchange = () => { renderCharts(); fresh(); };
+  $('reset').onclick = () => { for (const id of ['q', 'cat', 'rated']) $(id).value = ''; fresh(); };
 
   // ---- Excel export ----
   $('dl').onclick = () => {
