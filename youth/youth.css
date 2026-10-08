@@ -1,0 +1,89 @@
+/* Youth page extras on top of ../nepal_olympiad_dashboard.css */
+
+a {
+  color: var(--navy);
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+}
+
+.crumbs {
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.dl {
+  margin-left: auto;
+  background: var(--gold);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
+.dl:hover {
+  background: #f5bd4a;
+}
+
+.toolbar input,
+.toolbar select {
+  font: 14px 'IBM Plex Sans', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 8px 12px;
+}
+
+.toolbar input {
+  flex: 1 1 260px;
+}
+
+.toolbar input:focus,
+.toolbar select:focus,
+.tbtn:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+th.num,
+td.num {
+  text-align: right;
+}
+
+#summary tbody tr {
+  cursor: pointer;
+}
+
+#summary tbody tr:hover,
+#summary tbody tr.sel {
+  background: var(--navy-tint);
+}
+
+#summary td:first-child,
+tfoot td {
+  font-weight: 600;
+}
+
+tfoot td {
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 0;
+}
+
+.table-scroll.tall {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.table-scroll.tall th {
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+}
+
+#players td {
+  white-space: nowrap;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 32px 0;
+}

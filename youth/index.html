@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nepal Youth Players</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"
+    ></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="../nepal_olympiad_dashboard.css" />
+    <link rel="stylesheet" href="youth.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="crumbs"><a href="../">← Nepal at the Chess Olympiad</a></nav>
+      <div class="hero">
+        <h1>Nepal's youth players, U7 to U20</h1>
+        <p class="subtitle">
+          Every NEP-registered player on the FIDE list young enough for a youth category in
+          <span class="year"></span>. Age counts as of 1 January (FIDE rule), so "Under N" means born
+          in <span class="year"></span>−N or later. Each player sits in one category only, the
+          youngest they fit. "Rated" means <span class="min"></span> or more in any format. Players
+          with no birth year on record are left out.
+        </p>
+        <div class="scoreboard" id="scoreboard"></div>
+      </div>
+
+      <div class="filter-bar">
+        <label for="sex">Show</label>
+        <select id="sex" aria-label="Filter by sex">
+          <option value="">Boys + girls</option>
+          <option value="M">Boys</option>
+          <option value="F">Girls</option>
+        </select>
+        <button class="tbtn dl" id="dl" type="button" title="One summary sheet plus one sheet per category">
+          Download Excel
+        </button>
+      </div>
+
+      <section class="reveal">
+        <h2>Players per age group</h2>
+        <p class="section-intro">Click a bar to list that category's players below.</p>
+        <div class="legend-row">
+          <span class="legend-item" data-sex="M"><span class="swatch" style="background: var(--navy)"></span>Boys</span>
+          <span class="legend-item" data-sex="F"><span class="swatch" style="background: var(--coral)"></span>Girls</span>
+        </div>
+        <div class="chart-box" style="height: 340px">
+          <canvas id="catChart" role="img" aria-label="Stacked bar chart of Nepal youth players per FIDE age category, boys and girls"></canvas>
+        </div>
+        <p class="insight" id="cat-insight"></p>
+      </section>
+
+      <section class="reveal">
+        <h2>How many hold a rating</h2>
+        <p class="section-intro">Players at <span class="min"></span>+ in standard, rapid or blitz, against those with no rating at that level.</p>
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background: var(--navy)"></span>Rated</span>
+          <span class="legend-item"><span class="swatch" style="background: var(--paper-2)"></span>No rating</span>
+        </div>
+        <div class="chart-box" style="height: 340px">
+          <canvas id="ratedChart" role="img" aria-label="Stacked bar chart of rated versus unrated youth players per age category"></canvas>
+        </div>
+        <p class="insight gold" id="rated-insight"></p>
+      </section>
+
+      <section class="reveal">
+        <h2>Where the ratings sit</h2>
+        <p class="section-intro">Rated youth players by their best rating across the three formats, in 100-point bands.</p>
+        <div class="chart-box" style="height: 320px">
+          <canvas id="distChart" role="img" aria-label="Bar chart of rated youth players grouped by best rating in 100 point bands"></canvas>
+        </div>
+      </section>
+
+      <section class="reveal">
+        <h2>Summary by category</h2>
+        <div class="table-scroll">
+          <table id="summary">
+            <thead>
+              <tr>
+                <th>Category</th><th>Birth years</th><th class="num">Total</th><th class="num">Boys</th>
+                <th class="num">Girls</th><th class="num">Rated</th><th class="num">Rated boys</th>
+                <th class="num">Rated girls</th><th class="num">No rating</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </section>
+
+      <section class="reveal" id="players-sec">
+        <h2 id="ptitle"></h2>
+        <div class="btn-row toolbar">
+          <input id="q" type="search" placeholder="Search by name or FIDE ID…" aria-label="Search players" autocomplete="off" />
+          <select id="cat" aria-label="Category"><option value="">All categories</option></select>
+          <select id="rated" aria-label="Rating">
+            <option value="">Rated + unrated</option>
+            <option value="1">Rated</option>
+            <option value="0">No rating</option>
+          </select>
+          <button class="tbtn" id="reset" type="button">Reset</button>
+        </div>
+        <div class="table-scroll tall">
+          <table id="players">
+            <thead>
+              <tr>
+                <th class="num">#</th><th>Cat.</th><th>FIDE ID</th><th>Name</th><th>Sex</th>
+                <th class="num">Born</th><th>Title</th><th class="num">Standard</th>
+                <th class="num">Rapid</th><th class="num">Blitz</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="empty" id="empty" hidden>No players match these filters.</p>
+        </div>
+      </section>
+
+      <footer>
+        <p>Source: FIDE rating list, federation NEP. Birth year only, so ages are ±1 year. Built by youth/build_data.py.</p>
+      </footer>
+    </main>
+    <script defer src="youth.js"></script>
+  </body>
+</html>
