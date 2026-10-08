@@ -44,19 +44,23 @@
       </div>
 
       <div class="filter-bar">
-        <label for="sex">Show</label>
-        <select id="sex" aria-label="Filter by sex">
-          <option value="">Boys + girls</option>
-          <option value="M">Boys</option>
-          <option value="F">Girls</option>
-        </select>
-        <label for="fmt">Rating</label>
-        <select id="fmt" aria-label="Rating format">
-          <option value="best">Best of any</option>
-          <option value="std">Standard</option>
-          <option value="rapid">Rapid</option>
-          <option value="blitz">Blitz</option>
-        </select>
+        <div class="fgroup">
+        <label>Show</label>
+        <div class="seg" id="sex" role="group" aria-label="Players">
+          <button type="button" data-v="" aria-pressed="true">All</button>
+          <button type="button" data-v="M" aria-pressed="false">Boys</button>
+          <button type="button" data-v="F" aria-pressed="false">Girls</button>
+        </div>
+        </div>
+        <div class="fgroup">
+        <label>Rating</label>
+        <div class="seg" id="fmt" role="group" aria-label="Rating format">
+          <button type="button" data-v="best" aria-pressed="true">Best of any</button>
+          <button type="button" data-v="std" aria-pressed="false">Standard</button>
+          <button type="button" data-v="rapid" aria-pressed="false">Rapid</button>
+          <button type="button" data-v="blitz" aria-pressed="false">Blitz</button>
+        </div>
+        </div>
         <button class="tbtn dl" id="dl" type="button" title="One summary sheet plus one sheet per category">
           Download Excel
         </button>
@@ -66,11 +70,11 @@
         <h2>Players per age group</h2>
         <p class="section-intro">Click a bar to list that category's players below.</p>
         <div class="legend-row">
-          <span class="legend-item" data-sex="M"><span class="swatch" style="background: var(--navy)"></span>Boys</span>
-          <span class="legend-item" data-sex="F"><span class="swatch" style="background: var(--coral)"></span>Girls</span>
+          <span class="legend-item" data-sex="M"><span class="swatch" style="background: var(--primary)"></span>Boys</span>
+          <span class="legend-item" data-sex="F"><span class="swatch" style="background: var(--second)"></span>Girls</span>
         </div>
         <div class="chart-box" style="height: 340px">
-          <canvas id="catChart" role="img" aria-label="Stacked bar chart of Nepal youth players per FIDE age category, boys and girls"></canvas>
+          <canvas id="catChart" role="img" aria-label="Grouped bar chart of Nepal youth players per FIDE age category, boys and girls"></canvas>
         </div>
         <p class="insight" id="cat-insight"></p>
       </section>
@@ -79,13 +83,13 @@
         <h2>How many hold a rating</h2>
         <p class="section-intro">Players at <span class="min"></span>+ <span class="fmtname">in any format</span>, against those with no rating at that level.</p>
         <div class="legend-row">
-          <span class="legend-item"><span class="swatch" style="background: var(--navy)"></span>Rated</span>
-          <span class="legend-item"><span class="swatch" style="background: var(--paper-2)"></span>No rating</span>
+          <span class="legend-item"><span class="swatch" style="background: var(--primary)"></span>Rated</span>
+          <span class="legend-item"><span class="swatch" style="background: #ced3e3"></span>No rating</span>
         </div>
         <div class="chart-box" style="height: 340px">
-          <canvas id="ratedChart" role="img" aria-label="Stacked bar chart of rated versus unrated youth players per age category"></canvas>
+          <canvas id="ratedChart" role="img" aria-label="Grouped bar chart of rated versus unrated youth players per age category"></canvas>
         </div>
-        <p class="insight gold" id="rated-insight"></p>
+        <p class="insight accent" id="rated-insight"></p>
       </section>
 
       <section class="reveal">

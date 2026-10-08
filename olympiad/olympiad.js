@@ -1,7 +1,8 @@
-const NAVY = '#1D1E3E';
-const CORAL = '#C17A12';
-const MUTED = '#6A645C';
-const HAIR = '#D1C6B8';
+const PRIMARY = '#766AF5';
+const SECOND = '#DB2777';
+const MUTED = '#656C86';
+const HAIR = '#E6EAF4';
+const NEUTRAL = '#CED3E3'; // 'no rating' / 'new' bars, visible on white
 
 Chart.register(ChartDataLabels);
 Chart.defaults.plugins.datalabels = { display: false };
@@ -94,8 +95,8 @@ const trendChart = new Chart(document.getElementById('trendChart'), {
       {
         label: 'Open',
         data: trend.open.age,
-        borderColor: NAVY,
-        backgroundColor: NAVY,
+        borderColor: PRIMARY,
+        backgroundColor: PRIMARY,
         borderWidth: 2,
         pointRadius: 3,
         pointHoverRadius: 5,
@@ -105,8 +106,8 @@ const trendChart = new Chart(document.getElementById('trendChart'), {
       {
         label: 'Women',
         data: trend.women.age,
-        borderColor: CORAL,
-        backgroundColor: CORAL,
+        borderColor: SECOND,
+        backgroundColor: SECOND,
         borderWidth: 2,
         pointRadius: 3,
         pointHoverRadius: 5,
@@ -224,27 +225,27 @@ function contChart(elId, data) {
         {
           label: 'Returning',
           data: data.map((d) => d.returning),
-          backgroundColor: NAVY,
+          backgroundColor: PRIMARY,
           borderRadius: 3,
-          maxBarThickness: 28,
-          categoryPercentage: 0.55,
-          barPercentage: 0.7,
+          maxBarThickness: 18,
+          categoryPercentage: 0.7,
+          barPercentage: 0.85,
         },
         {
           label: 'New',
           data: data.map((d) => d.new),
-          backgroundColor: HAIR,
+          backgroundColor: NEUTRAL,
           borderRadius: 3,
-          maxBarThickness: 28,
-          categoryPercentage: 0.55,
-          barPercentage: 0.7,
+          maxBarThickness: 18,
+          categoryPercentage: 0.7,
+          barPercentage: 0.85,
         },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { top: 14 } },
+      layout: { padding: { top: 24 } }, // room for the value label above the tallest bar
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -260,10 +261,10 @@ function contChart(elId, data) {
           },
         },
         datalabels: valueLabels({
-          color: '#221E20',
+          color: MUTED,
           font: { family: "'IBM Plex Sans'", size: 10, weight: '600' },
-          anchor: 'center',
-          align: 'center',
+          anchor: 'end',
+          align: 'end',
           display(ctx) {
             const v = ctx.dataset.data[ctx.dataIndex];
             return v != null && v > 0;
@@ -271,9 +272,8 @@ function contChart(elId, data) {
         }),
       },
       scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { color: MUTED } },
+        x: { grid: { display: false }, ticks: { color: MUTED } },
         y: {
-          stacked: true,
           beginAtZero: true,
           grid: { color: HAIR },
           ticks: { color: MUTED, stepSize: 1 },
@@ -567,7 +567,7 @@ function renderExtremes() {
     (r) =>
       `${r.year} ${r.section === 'open' ? 'Open' : 'Women'}${r.participation !== 'competed' ? '*' : ''}`,
   );
-  const colors = rows.map((r) => (r.section === 'open' ? NAVY : CORAL));
+  const colors = rows.map((r) => (r.section === 'open' ? PRIMARY : SECOND));
   let data, lowNames, highNames, axisTitle;
   if (extremeMetric === 'age') {
     data = rows.map((r) => [r.youngest_age, r.oldest_age]);
@@ -685,7 +685,7 @@ function renderSeed() {
   const rows = seedRows.filter((r) => show(r.section));
   const labels = rows.map((r) => `${r.year} ${r.section === 'open' ? 'Open' : 'Women'}`);
   const data = rows.map((r) => [Math.min(r.seed, r.final), Math.max(r.seed, r.final)]);
-  const colors = rows.map((r) => (r.seed >= r.final ? NAVY : CORAL));
+  const colors = rows.map((r) => (r.seed >= r.final ? PRIMARY : SECOND));
   const moved = rows.map((r) => r.seed - r.final);
   if (seedChart) seedChart.destroy();
   seedChart = new Chart(document.getElementById('seedChart'), {
@@ -797,7 +797,7 @@ const fieldChart = new Chart(document.getElementById('fieldChart'), {
       {
         label: 'Open',
         data: fieldOpen,
-        backgroundColor: NAVY,
+        backgroundColor: PRIMARY,
         borderRadius: 3,
         categoryPercentage: 0.58,
         barPercentage: 0.7,
@@ -805,7 +805,7 @@ const fieldChart = new Chart(document.getElementById('fieldChart'), {
       {
         label: 'Women',
         data: fieldWomen,
-        backgroundColor: CORAL,
+        backgroundColor: SECOND,
         borderRadius: 3,
         categoryPercentage: 0.58,
         barPercentage: 0.7,
@@ -869,8 +869,8 @@ const percentileChart = new Chart(document.getElementById('percentileChart'), {
         data: pctRows
           .filter((r) => r.section === 'open')
           .map((r) => ({ x: r.year, y: r.percentile })),
-        borderColor: NAVY,
-        backgroundColor: NAVY,
+        borderColor: PRIMARY,
+        backgroundColor: PRIMARY,
         borderWidth: 2,
         pointRadius: 4,
       },
@@ -879,8 +879,8 @@ const percentileChart = new Chart(document.getElementById('percentileChart'), {
         data: pctRows
           .filter((r) => r.section === 'women')
           .map((r) => ({ x: r.year, y: r.percentile })),
-        borderColor: CORAL,
-        backgroundColor: CORAL,
+        borderColor: SECOND,
+        backgroundColor: SECOND,
         borderWidth: 2,
         pointRadius: 4,
       },
@@ -914,7 +914,7 @@ const percentileChart = new Chart(document.getElementById('percentileChart'), {
       x: {
         type: 'linear',
         offset: true,
-        ticks: { color: MUTED, stepSize: 2, padding: 4 },
+        ticks: { color: MUTED, stepSize: 2, padding: 4, callback: (v) => String(v) }, // years, not "2,004"
         grid: { display: false },
       },
       y: {
@@ -1014,7 +1014,7 @@ function renderCaps() {
   const labels = rows.map((r) => (r.title ? `${r.title} ${r.name}` : r.name));
   const values = rows.map((r) => r.count);
   const colors = rows.map((r) =>
-    r.sections.includes('women') && !r.sections.includes('open') ? CORAL : NAVY,
+    r.sections.includes('women') && !r.sections.includes('open') ? SECOND : PRIMARY,
   );
   if (capsChart) capsChart.destroy();
   capsChart = new Chart(document.getElementById('capsChart'), {

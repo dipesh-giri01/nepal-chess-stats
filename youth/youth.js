@@ -1,8 +1,19 @@
-const NAVY = '#1D1E3E';
-const CORAL = '#C17A12';
-const MUTED = '#6A645C';
-const HAIR = '#D1C6B8';
+const PRIMARY = '#766AF5';
+const SECOND = '#DB2777';
+const MUTED = '#656C86';
+const HAIR = '#E6EAF4';
+const NEUTRAL = '#CED3E3'; // 'no rating' / 'new' bars, visible on white
 const $ = (id) => document.getElementById(id);
+// value of a .seg toggle group = data-v of its pressed button
+const segVal = (id) => $(id).querySelector('[aria-pressed="true"]').dataset.v;
+function onSeg(id, fn) {
+  $(id).addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    $(id).querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    fn();
+  });
+}
 
 Chart.register(ChartDataLabels);
 Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
@@ -41,7 +52,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     rapid: ['in rapid', (p) => p.rapid || 0],
     blitz: ['in blitz', (p) => p.blitz || 0],
   };
-  const rating = (p) => FORMATS[$('fmt').value][1](p);
+  const rating = (p) => FORMATS[segVal('fmt')][1](p);
   const rated = (p) => rating(p) >= MIN;
   const fmt = (v) => (typeof v === 'number' ? v.toLocaleString() : v);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -51,9 +62,9 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   };
   const labels = CATS.map((n) => 'U' + n);
   const grid = { color: HAIR, drawTicks: false };
-  const axes = (stacked) => ({
-    x: { stacked, grid: { display: false } },
-    y: { stacked, beginAtZero: true, grid, border: { display: false }, ticks: { padding: 8 } },
+  const axes = () => ({
+    x: { grid: { display: false } },
+    y: { beginAtZero: true, grid, border: { display: false }, ticks: { padding: 8 } },
   });
 
   function stats(list) {
@@ -90,45 +101,47 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     $('players-sec').scrollIntoView({ behavior: 'smooth' });
   };
   const onBar = (_, els) => els.length && pickCat(els[0].index);
-  const stackLabels = { display: (c) => c.datasetIndex === c.chart.data.datasets.length - 1, anchor: 'end', align: 'end', color: MUTED, font: { size: 10, weight: '500' } };
+  // value on each bar; skipped on narrow screens where grouped labels collide (tooltip still has them)
+  const barLabels = { display: (c) => !!c.dataset.data[c.dataIndex] && c.chart.width > 520, anchor: 'end', align: 'end', color: MUTED, font: { size: 10, weight: '500' }, formatter: fmt };
 
   const catChart = new Chart($('catChart'), {
     type: 'bar',
     data: { labels, datasets: [
-      { label: 'Boys', backgroundColor: NAVY, data: [] },
-      { label: 'Girls', backgroundColor: CORAL, data: [] },
+      { label: 'Boys', backgroundColor: PRIMARY, data: [] },
+      { label: 'Girls', backgroundColor: SECOND, data: [] },
     ] },
     options: {
-      maintainAspectRatio: false, onClick: onBar, scales: axes(true), layout: { padding: { top: 20 } },
-      plugins: { datalabels: { ...stackLabels, formatter: (_, c) => fmt(c.chart.data.datasets.reduce((s, d) => s + (d.hidden ? 0 : d.data[c.dataIndex]), 0)) } },
+      maintainAspectRatio: false, onClick: onBar, scales: axes(), layout: { padding: { top: 20 } },
+      plugins: { datalabels: barLabels },
     },
   });
 
   const ratedChart = new Chart($('ratedChart'), {
     type: 'bar',
     data: { labels, datasets: [
-      { label: 'Rated', backgroundColor: NAVY, data: [] },
-      { label: 'No rating', backgroundColor: HAIR, data: [] },
+      { label: 'Rated', backgroundColor: PRIMARY, data: [] },
+      { label: 'No rating', backgroundColor: NEUTRAL, data: [] },
     ] },
     options: {
-      maintainAspectRatio: false, onClick: onBar, scales: axes(true), layout: { padding: { top: 20 } },
+      maintainAspectRatio: false, onClick: onBar, scales: axes(), layout: { padding: { top: 20 } },
       plugins: {
-        datalabels: { ...stackLabels, formatter: (_, c) => { const r = c.chart.data.datasets[0].data[c.dataIndex], n = r + c.chart.data.datasets[1].data[c.dataIndex]; return n ? Math.round((100 * r) / n) + '% rated' : ''; } },
+        datalabels: barLabels,
+        tooltip: { callbacks: { footer: (items) => { const d = items[0].chart.data.datasets, i = items[0].dataIndex, n = d[0].data[i] + d[1].data[i]; return n ? Math.round((100 * d[0].data[i]) / n) + '% rated' : ''; } } },
       },
     },
   });
 
   const distChart = new Chart($('distChart'), {
     type: 'bar',
-    data: { labels: [], datasets: [{ label: 'Players', backgroundColor: NAVY, data: [] }] },
+    data: { labels: [], datasets: [{ label: 'Players', backgroundColor: PRIMARY, data: [] }] },
     options: {
-      maintainAspectRatio: false, scales: axes(false), layout: { padding: { top: 20 } },
+      maintainAspectRatio: false, scales: axes(), layout: { padding: { top: 20 } },
       plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: MUTED, font: { size: 10, weight: '500' } } },
     },
   });
 
   function renderCharts() {
-    const sex = $('sex').value;
+    const sex = segVal('sex');
     const list = ALL.filter((p) => !sex || p.sex === sex);
     const groups = byCat(list);
 
@@ -151,14 +164,14 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     const keys = Object.keys(bands).map(Number).sort((a, b) => a - b);
     distChart.data.labels = keys.map((k) => `${k}–${k + 99}`);
     distChart.data.datasets[0].data = keys.map((k) => bands[k]);
-    distChart.data.datasets[0].backgroundColor = sex === 'F' ? CORAL : NAVY;
+    distChart.data.datasets[0].backgroundColor = sex === 'F' ? SECOND : PRIMARY;
     distChart.update();
 
     // scoreboard + insights follow the filter
     const s = stats(list);
     const biggest = groups.reduce((m, l, i) => (l.length > groups[m].length ? i : m), 0);
     const top = list.reduce((m, p) => (!m || rating(p) > rating(m) ? p : m), null);
-    const inFmt = FORMATS[$('fmt').value][0];
+    const inFmt = FORMATS[segVal('fmt')][0];
     document.querySelectorAll('.fmtname').forEach((e) => (e.textContent = inFmt));
     const who = sex === 'F' ? 'girls' : sex === 'M' ? 'boys' : 'youth players';
     $('scoreboard').innerHTML = [
@@ -182,7 +195,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   const STEP = 100; // rows shown per 'Show more' click; the page scrolls, no nested scroll box
   let shown = STEP;
   function renderPlayers() {
-    const q = $('q').value.trim().toLowerCase(), sex = $('sex').value, rt = $('rated').value;
+    const q = $('q').value.trim().toLowerCase(), sex = segVal('sex'), rt = $('rated').value;
     const cat = $('cat').value ? +$('cat').value : null;
     const list = ALL.filter((p) => (cat === null || p.cat === cat) && (!sex || p.sex === sex) &&
       (!rt || rated(p) === (rt === '1')) && (!q || p.name.toLowerCase().includes(q) || p.id.includes(q)))
@@ -202,8 +215,8 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
   $('more').onclick = () => { shown += STEP; renderPlayers(); };
   $('q').oninput = fresh;
   $('cat').onchange = $('rated').onchange = fresh;
-  $('sex').onchange = () => { renderCharts(); fresh(); };
-  $('fmt').onchange = () => { renderCharts(); renderSummary(); fresh(); };
+  onSeg('sex', () => { renderCharts(); fresh(); });
+  onSeg('fmt', () => { renderCharts(); renderSummary(); fresh(); });
   $('reset').onclick = () => { for (const id of ['q', 'cat', 'rated']) $(id).value = ''; fresh(); };
 
   // ---- Excel export ----
@@ -213,7 +226,7 @@ function start({ players: ALL, year: YEAR, cats: CATS, min: MIN }) {
     for (const n of CATS) {
       const list = ALL.filter((p) => p.cat === n).map((p, i) => ({
         '#': i + 1, 'FIDE ID': p.id, Name: p.name, Sex: p.sex, 'Birth year': p.by, Title: p.title,
-        Standard: p.std ?? '', Rapid: p.rapid ?? '', Blitz: p.blitz ?? '', [`Rated (≥${MIN} ${FORMATS[$('fmt').value][0]})`]: rated(p) ? 'Yes' : 'No', 'FIDE profile': fide(p.id),
+        Standard: p.std ?? '', Rapid: p.rapid ?? '', Blitz: p.blitz ?? '', [`Rated (≥${MIN} ${FORMATS[segVal('fmt')][0]})`]: rated(p) ? 'Yes' : 'No', 'FIDE profile': fide(p.id),
       }));
       const ws = XLSX.utils.json_to_sheet(list);
       list.forEach((_, i) => { const c = ws['K' + (i + 2)]; if (c) c.l = { Target: c.v }; }); // clickable profile column

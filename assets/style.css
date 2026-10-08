@@ -1,15 +1,19 @@
 :root {
-  --ink: #221e20;
-  --paper: #e7e5df;
-  --paper-2: #d1c6b8;
-  --navy: #1d1e3e;
-  --navy-tint: #d8d8e2;
-  --coral: #c17a12;
-  --coral-tint: #f8e7c2;
-  --gold: #fccd6e;
-  --taupe: #8d7663;
-  --muted: #6a645c;
-  --hair: #d1c6b8;
+  /* BitpointX palette, option I (white navbar, violet + magenta); keep in sync with the colour constants in the page scripts */
+  --ink: #0d0f2c;
+  --paper: #ffffff;
+  --paper-2: #f5f8ff;
+  --primary: #766af5; /* charts, borders, swatches */
+  --primary-strong: #4031b3; /* white text on it, or as text colour: passes AA */
+  --primary-tint: #eceafe;
+  --second: #db2777;
+  --second-tint: #fce7f3;
+  --accent: #a880d9;
+  --brand-gradient: linear-gradient(90deg, #8098f9, #766af5 50%, #a880d9); /* decorative strips */
+  --button-gradient: linear-gradient(90deg, #4031b3, #5b4cdb); /* behind white text: >= 6:1 */
+  --taupe: #656c86;
+  --muted: #656c86;
+  --hair: #e6eaf4;
   --nav-h: 52px;
 }
 
@@ -24,8 +28,8 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(ellipse 90% 55% at 0% -5%, rgba(29, 30, 62, 0.07), transparent 55%),
-    radial-gradient(ellipse 70% 45% at 100% 0%, rgba(252, 205, 110, 0.18), transparent 50%),
+    radial-gradient(ellipse 90% 55% at 0% -5%, rgba(128, 152, 249, 0.1), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 100% 0%, rgba(168, 128, 217, 0.1), transparent 50%),
     var(--paper);
   color: var(--ink);
   font-family: 'IBM Plex Sans', sans-serif;
@@ -100,7 +104,7 @@ h2 {
   font-size: 34px;
   font-weight: 500;
   line-height: 1;
-  color: var(--navy);
+  color: var(--primary-strong);
 }
 
 .stat-label {
@@ -121,9 +125,15 @@ h2 {
   gap: 12px;
   padding: 12px 0 14px;
   margin-bottom: 40px;
-  background: rgba(231, 229, 223, 0.92);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--hair);
+}
+
+.fgroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .filter-bar label {
@@ -148,7 +158,7 @@ h2 {
 }
 
 .filter-bar select:focus {
-  outline: 2px solid var(--navy);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -244,10 +254,45 @@ section {
   background: var(--paper-2);
 }
 
+/* Segmented toggle: <div class="seg"> of buttons, the pressed one is the value */
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  background: var(--paper-2);
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+}
+
+.seg button {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: 500 13px 'IBM Plex Sans', sans-serif;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.seg button:hover {
+  color: var(--ink);
+}
+
+.seg button[aria-pressed='true'] {
+  background: var(--button-gradient);
+  color: #fff;
+}
+
+.seg button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .tbtn.active {
-  background: var(--navy);
-  color: var(--paper);
-  border-color: var(--navy);
+  background: var(--primary-strong);
+  color: #fff;
+  border-color: var(--primary-strong);
 }
 
 /* Charts */
@@ -268,12 +313,12 @@ section {
   font-size: 14px;
   color: var(--muted);
   margin-top: 20px;
-  border-left: 2px solid var(--navy);
+  border-left: 2px solid var(--primary);
   padding-left: 14px;
 }
 
-.insight.gold {
-  border-left-color: var(--gold);
+.insight.accent {
+  border-left-color: var(--accent);
 }
 
 /* Table */
@@ -308,12 +353,12 @@ td.num {
 }
 
 tr.row-open td:first-child {
-  border-left: 3px solid var(--navy);
+  border-left: 3px solid var(--primary);
   padding-left: 13px;
 }
 
 tr.row-women td:first-child {
-  border-left: 3px solid var(--coral);
+  border-left: 3px solid var(--second);
   padding-left: 13px;
 }
 
@@ -392,8 +437,8 @@ footer p {
 }
 
 a {
-  color: var(--navy);
-  text-decoration-color: var(--gold);
+  color: var(--primary-strong);
+  text-decoration-color: var(--accent);
   text-underline-offset: 3px;
 }
 
@@ -403,7 +448,9 @@ a {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--navy);
+  /* brand gradient as a 3px strip inside the bar, so the bar stays --nav-h tall */
+  background: var(--brand-gradient) bottom / 100% 3px no-repeat, var(--paper);
+  box-shadow: 0 1px 0 var(--hair);
 }
 
 .topnav-in {
@@ -418,7 +465,7 @@ a {
 }
 
 .topnav a {
-  color: var(--paper);
+  color: var(--ink);
   text-decoration: none;
   font-size: 14px;
 }
@@ -441,12 +488,13 @@ a {
 
 .topnav .links a:hover,
 .topnav .links a:focus-visible {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--paper-2);
 }
 
 .topnav .links a[aria-current='page'] {
-  color: var(--gold);
-  box-shadow: inset 0 -2px 0 var(--gold);
+  font-weight: 600;
+  color: var(--primary-strong);
+  background: var(--primary-tint);
 }
 
 /* Landing page section cards */
@@ -461,9 +509,9 @@ a {
   display: flex;
   flex-direction: column;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--paper);
   border: 1px solid var(--hair);
-  border-top: 3px solid var(--gold);
+  border-top: 3px solid var(--primary);
   border-radius: 6px;
   color: var(--ink);
   text-decoration: none;
@@ -472,7 +520,7 @@ a {
 
 .card:hover,
 .card:focus-visible {
-  border-color: var(--navy);
+  border-color: var(--primary);
   transform: translateY(-2px);
 }
 
@@ -483,7 +531,7 @@ a {
 }
 
 .card .go {
-  color: var(--navy);
+  color: var(--primary-strong);
   font-weight: 600;
   font-size: 14px;
 }
@@ -499,5 +547,9 @@ a {
 
   .topnav .links a {
     padding: 6px 8px;
+  }
+
+  .seg button {
+    padding: 6px 10px;
   }
 }

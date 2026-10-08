@@ -2,13 +2,14 @@
 
 .dl {
   margin-left: auto;
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--button-gradient);
+  border-color: transparent;
+  color: #fff;
   font-weight: 600;
 }
 
 .dl:hover {
-  background: #f5bd4a;
+  filter: brightness(0.9);
 }
 
 .toolbar input,
@@ -28,7 +29,7 @@
 .toolbar input:focus,
 .toolbar select:focus,
 .tbtn:focus-visible {
-  outline: 2px solid var(--navy);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -43,7 +44,7 @@ td.num {
 
 #summary tbody tr:hover,
 #summary tbody tr.sel {
-  background: var(--navy-tint);
+  background: var(--primary-tint);
 }
 
 #summary td:first-child,
