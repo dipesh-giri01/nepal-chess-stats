@@ -1,15 +1,4 @@
-/* Youth page extras on top of ../nepal_olympiad_dashboard.css */
-
-a {
-  color: var(--navy);
-  text-decoration-color: var(--gold);
-  text-underline-offset: 3px;
-}
-
-.crumbs {
-  font-size: 13px;
-  margin-bottom: 28px;
-}
+/* Youth page extras on top of ../assets/style.css */
 
 .dl {
   margin-left: auto;

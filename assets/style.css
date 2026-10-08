@@ -382,3 +382,14 @@ footer p {
     padding: 10px 8px;
   }
 }
+
+a {
+  color: var(--navy);
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+}
+
+.crumbs {
+  font-size: 13px;
+  margin-bottom: 28px;
+}

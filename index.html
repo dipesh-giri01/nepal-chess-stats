@@ -3,247 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nepal at the Chess Olympiad</title>
+    <title>Nepal Chess Stats</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"
-    ></script>
-    <link rel="stylesheet" href="nepal_olympiad_dashboard.css" />
+    <link rel="stylesheet" href="assets/style.css" />
   </head>
   <body>
     <main class="wrap">
       <div class="hero">
-        <h1>Nepal at the Chess Olympiad</h1>
-        <p class="subtitle">
-          A record of every over-the-board appearance since the federation's 2004 debut, open and
-          women's sections, through the 46th Olympiad in Samarkand. The 2020 Olympiad was postponed;
-          2021 was the separate FIDE Online Chess Olympiad (Nepal won Division 4 Pool A, then
-          finished 8th in Division 3) and is not in this OTB series.
-        </p>
-        <div class="scoreboard" id="scoreboard"></div>
-        <p class="subtitle"><a href="youth/">Nepal's youth players, U7 to U20 →</a></p>
+        <h1>Nepal Chess Stats</h1>
+        <p class="subtitle">Data dashboards on Nepali chess.</p>
       </div>
-
-      <div class="filter-bar" id="filterBar">
-        <label for="sectionFilter">Section</label>
-        <select id="sectionFilter" aria-label="Filter charts by section">
-          <option value="all" selected>All</option>
-          <option value="open">Open</option>
-          <option value="women">Women</option>
-        </select>
-      </div>
-
-      <section class="reveal">
-        <h2>Squad age, rating and rank</h2>
-        <p class="section-intro">
-          Every over-the-board edition 2004 to 2026. The timeline jumps 2018→2022 because the 44th
-          Olympiad was postponed by COVID and the 2021 FIDE Online Olympiad was a separate
-          mixed-team online event. The 2024 squad registered but did not travel; 2026 is a
-          provisional seeding for Samarkand, shown dashed in both cases.
-        </p>
-        <div class="btn-row">
-          <button class="tbtn active" data-metric="age">Age</button>
-          <button class="tbtn" data-metric="rating">Rating</button>
-          <button class="tbtn" data-metric="rank">Rank</button>
-        </div>
-        <div class="legend-row" data-pair-legend>
-          <span class="legend-item" data-section="open"
-            ><span class="swatch" style="background: var(--navy)"></span>Open</span
-          >
-          <span class="legend-item" data-section="women"
-            ><span class="swatch" style="background: var(--coral)"></span>Women</span
-          >
-        </div>
-        <div class="chart-box" style="height: 340px">
-          <canvas
-            id="trendChart"
-            role="img"
-            aria-label="Line chart of Nepal Open and Women squad age, rating and rank by Olympiad edition, 2004 to 2026"
-          ></canvas>
-        </div>
-        <p class="insight" id="trend-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>How big was the field</h2>
-        <p class="section-intro">
-          Total teams and nations per edition, from Wikipedia (2004–2024) and FIDE for Samarkand
-          2026: 208 Open and 192 Women. The Olympiad has nearly doubled since Nepal's 2004 debut;
-          Samarkand is the largest ever.
-        </p>
-        <div class="legend-row" data-pair-legend>
-          <span class="legend-item" data-section="open"
-            ><span class="swatch" style="background: var(--navy)"></span>Open</span
-          >
-          <span class="legend-item" data-section="women"
-            ><span class="swatch" style="background: var(--coral)"></span>Women</span
-          >
-        </div>
-        <div class="chart-box" style="height: 340px">
-          <canvas
-            id="fieldChart"
-            role="img"
-            aria-label="Bar chart of total teams participating in the Open and Women sections of each Chess Olympiad edition from 2004 to 2026"
-          ></canvas>
-        </div>
-        <p class="insight" id="field-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>Nepal's rank, adjusted for field size</h2>
-        <p class="section-intro">
-          Raw rank alone undersells the growth in competition: finishing 108th in a 146-team field
-          (2008) is not the same achievement as 108th in a 200-team field. This shows Nepal's finish
-          as a percentile: 100% would mean winning the whole Olympiad, 0% would mean finishing last.
-        </p>
-        <div class="chart-box" style="height: 340px">
-          <canvas
-            id="percentileChart"
-            role="img"
-            aria-label="Line chart of Nepal's Olympiad finish expressed as a percentile of the field size, Open and Women, 2004 to 2022"
-          ></canvas>
-        </div>
-        <p class="insight gold" id="percentile-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>Starting seed vs final rank</h2>
-        <p class="section-intro">
-          Where Nepal was seeded going in (by rating) versus where it actually finished. Real seed
-          numbers pulled from Chess-Results' SNo column. The dataset's own "list_rank" field turned
-          out to just duplicate final rank, so this required going back to the source. Includes 2016
-          and 2018 Women (Baku, Batumi). 2004 and 2006 Open still omitted: early standings files
-          don't cleanly separate seed from finish.
-        </p>
-        <div class="legend-row">
-          <span class="legend-item"
-            ><span class="swatch" style="background: var(--navy)"></span>Finished better than
-            seeded</span
-          >
-          <span class="legend-item"
-            ><span class="swatch" style="background: var(--coral)"></span>Finished worse than
-            seeded</span
-          >
-        </div>
-        <div class="chart-box" style="height: 500px">
-          <canvas
-            id="seedChart"
-            role="img"
-            aria-label="Floating bar chart comparing Nepal's pre tournament seed rank to its final rank for each Olympiad edition with available data"
-          ></canvas>
-        </div>
-        <p class="insight" id="seed-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>How much does the squad turn over each cycle</h2>
-        <p class="section-intro">
-          Returning players versus first-time selections, by edition, including the 2024 registered
-          squad (marked *, did not travel due to visa issues) and the 2026 provisional squad (marked
-          *, Samarkand starts 16 September). Nepal rebuilds its team almost from scratch most
-          cycles, and the results don't track continuity either.
-        </p>
-        <div class="chart-stack" id="continuityCols">
-          <div data-section-panel="open">
-            <p style="font-size: 13px; color: var(--muted); margin: 0 0 8px">Open</p>
-            <div class="chart-box" style="height: 300px">
-              <canvas
-                id="contOpenChart"
-                role="img"
-                aria-label="Stacked bar chart of returning versus new Open squad members by edition"
-              ></canvas>
-            </div>
-          </div>
-          <div data-section-panel="women">
-            <p style="font-size: 13px; color: var(--muted); margin: 0 0 8px">Women</p>
-            <div class="chart-box" style="height: 300px">
-              <canvas
-                id="contWomenChart"
-                role="img"
-                aria-label="Stacked bar chart of returning versus new Women squad members by edition"
-              ></canvas>
-            </div>
-          </div>
-        </div>
-        <p class="insight" id="continuity-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>Youngest to oldest, lowest to highest rated</h2>
-        <p class="section-intro">
-          The full spread inside each squad, not just the average. Bars run from the squad's
-          youngest/lowest-rated player to its oldest/highest-rated. Hover for names.
-        </p>
-        <div class="btn-row">
-          <button class="tbtn active" data-extreme="age">Age range</button>
-          <button class="tbtn" data-extreme="rating">Rating range</button>
-        </div>
-        <div class="chart-box" id="extremeBox" style="height: 600px">
-          <canvas
-            id="extremeChart"
-            role="img"
-            aria-label="Floating bar chart showing the age or rating range within each Nepal Olympiad squad, from youngest or lowest rated to oldest or highest rated player"
-          ></canvas>
-        </div>
-        <p class="insight gold" id="extreme-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>Who plays for Nepal more than once</h2>
-        <p class="section-intro">
-          Counting every squad except 2024 (registered but never traveled, visa issues): 19 of the
-          45 players in this record have more than one appearance. The 2026 provisional squad counts
-          here, since those players are confirmed selections for an Olympiad that will actually
-          happen.
-        </p>
-        <div class="legend-row" data-pair-legend>
-          <span class="legend-item" data-section="open"
-            ><span class="swatch" style="background: var(--navy)"></span>Open</span
-          >
-          <span class="legend-item" data-section="women"
-            ><span class="swatch" style="background: var(--coral)"></span>Women</span
-          >
-        </div>
-        <div class="chart-box" style="height: 520px">
-          <canvas
-            id="capsChart"
-            role="img"
-            aria-label="Horizontal bar chart of Nepal Olympiad players ranked by number of appearances, for the 23 players with more than one appearance"
-          ></canvas>
-        </div>
-        <p class="insight" id="caps-insight"></p>
-      </section>
-
-      <section class="reveal">
-        <h2>Open vs women's section, head to head</h2>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="num">Editions competed</th>
-                <th class="num">Avg squad age</th>
-                <th class="num">Avg squad rating</th>
-                <th class="num">Best rank</th>
-                <th class="num">Avg rank</th>
-              </tr>
-            </thead>
-            <tbody id="compTable"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <footer id="footer"></footer>
+      <ul>
+        <li><a href="olympiad/">Nepal at the Chess Olympiad</a>: every appearance since 2004, open and women's sections</li>
+        <li><a href="youth/">Youth players</a>: FIDE-rated Nepali players, U7 to U20</li>
+      </ul>
     </main>
-
-    <script defer src="nepal_olympiad_dashboard.data.js"></script>
-    <script defer src="nepal_olympiad_dashboard.js"></script>
   </body>
 </html>
