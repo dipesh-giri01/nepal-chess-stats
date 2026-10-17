@@ -1,0 +1,73 @@
+/* Tournaments page extras on top of ../assets/style.css */
+
+.toolbar input,
+.toolbar select {
+  font: 14px 'IBM Plex Sans', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 8px 12px;
+}
+
+.toolbar input {
+  flex: 1 1 260px;
+}
+
+.toolbar input:focus,
+.toolbar select:focus,
+.tbtn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+th.num,
+td.num {
+  text-align: right;
+}
+
+.more:not([hidden]) {
+  display: block;
+  margin: 16px auto 0;
+}
+
+#events td.nw {
+  white-space: nowrap;
+}
+
+#events td.org {
+  color: var(--muted);
+  font-size: 13px;
+  min-width: 160px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 32px 0;
+}
+
+.dl {
+  margin-left: auto;
+  background: var(--button-gradient);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+.dl:hover {
+  filter: brightness(0.9);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* chief arbiter column is hidden until the checkbox is ticked */
+#events:not(.show-arb) .arb {
+  display: none;
+}

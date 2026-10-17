@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nepal Rated Tournaments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"
+    ></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="tournaments.css" />
+  </head>
+  <body>
+    <nav class="topnav" aria-label="Sections">
+      <div class="topnav-in">
+        <a class="brand" href="../">Nepal Chess Stats</a>
+        <div class="links">
+          <a href="../">Home</a>
+          <a href="../olympiad/">Olympiad</a>
+          <a href="../youth/">Youth</a>
+          <a href="../tournaments/" aria-current="page">Tournaments</a>
+        </div>
+      </div>
+    </nav>
+    <main class="wrap">
+      <div class="hero">
+        <h1>Nepal's FIDE rated tournaments</h1>
+        <p class="subtitle">
+          Every tournament in Nepal that FIDE has accepted for rating, from the first event in 2003.
+          Each row links to the FIDE tournament page. Events are listed by the date they started.
+        </p>
+        <div class="scoreboard" id="scoreboard"></div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="fgroup">
+          <label>Format</label>
+          <div class="seg" id="fmt" role="group" aria-label="Rating format">
+            <button type="button" data-v="" aria-pressed="true">All</button>
+            <button type="button" data-v="Standard" aria-pressed="false">Standard</button>
+            <button type="button" data-v="Rapid" aria-pressed="false">Rapid</button>
+            <button type="button" data-v="Blitz" aria-pressed="false">Blitz</button>
+          </div>
+        </div>
+        <button class="tbtn dl" id="dl" type="button" title="Downloads the tournaments matching the filters below">
+          Download Excel
+        </button>
+      </div>
+
+      <section class="reveal">
+        <h2>Tournaments per year</h2>
+        <p class="section-intro">Click a bar to list that year's tournaments below.</p>
+        <div class="legend-row">
+          <span class="legend-item" data-fmt="Standard"><span class="swatch" style="background: var(--primary)"></span>Standard</span>
+          <span class="legend-item" data-fmt="Rapid"><span class="swatch" style="background: var(--second)"></span>Rapid</span>
+          <span class="legend-item" data-fmt="Blitz"><span class="swatch" style="background: #ced3e3"></span>Blitz</span>
+        </div>
+        <div class="chart-box" style="height: 340px">
+          <canvas id="yearChart" role="img" aria-label="Stacked bar chart of FIDE rated tournaments in Nepal per year, by format"></canvas>
+        </div>
+        <p class="insight" id="year-insight"></p>
+      </section>
+
+      <section class="reveal">
+        <h2>When tournaments are held</h2>
+        <p class="section-intro">All years together, by the month the event started.</p>
+        <div class="chart-box" style="height: 300px">
+          <canvas id="monthChart" role="img" aria-label="Bar chart of FIDE rated tournaments in Nepal by start month"></canvas>
+        </div>
+        <p class="insight accent" id="month-insight"></p>
+      </section>
+
+      <section class="reveal" id="events-sec">
+        <h2 id="etitle"></h2>
+        <div class="btn-row toolbar">
+          <input id="q" type="search" placeholder="Search by name, city, organizer or arbiter…" aria-label="Search tournaments" autocomplete="off" />
+          <select id="year" aria-label="Year"><option value="">All years</option></select>
+          <select id="cap" aria-label="Rating limit">
+            <option value="">With or without rating limit</option>
+            <option value="1">Below-rating events only</option>
+            <option value="0">No rating limit in name</option>
+          </select>
+          <label class="check"><input type="checkbox" id="showarb" /> Show chief arbiter</label>
+          <button class="tbtn" id="reset" type="button">Reset</button>
+        </div>
+        <div class="table-scroll">
+          <table id="events">
+            <thead>
+              <tr>
+                <th>Start</th><th>Tournament</th><th>City</th><th>Format</th><th>Rating limit</th>
+                <th class="num">Players</th><th>Organizer</th><th class="arb">Chief arbiter</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="empty" id="empty" hidden>No tournaments match these filters.</p>
+        </div>
+        <button class="tbtn more" id="more" type="button" hidden></button>
+      </section>
+
+      <footer>
+        <p>Source: FIDE rated tournaments archive, federation NEP. Player counts are as FIDE reports them. Organizers are listed for some events only. "Rating limit" is read from the tournament name (for example "Below 1900"); age limits such as U19 are not counted. Built by tournaments/build_data.py.</p>
+      </footer>
+    </main>
+    <script defer src="tournaments.js"></script>
+  </body>
+</html>
