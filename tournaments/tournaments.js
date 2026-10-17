@@ -122,6 +122,7 @@ function start({ events: ALL }) {
 
   // ---- tournament list ----
   $('year').innerHTML += [...years].reverse().map((y) => `<option value="${y}">${y}</option>`).join('');
+  $('month').innerHTML += MONTHS.map((m, i) => `<option value="${i}">${m}</option>`).join('');
   // arbiter dropdowns: most active first, with event counts
   for (const [id, key] of [['arb', 'arb'], ['dep', 'dep']]) {
     const n = {};
@@ -134,8 +135,8 @@ function start({ events: ALL }) {
   const filtered = () => {
     const q = $('q').value.trim().toLowerCase(), word = $('word').value.trim().toLowerCase();
     const y = $('year').value ? +$('year').value : null, cap = $('cap').value;
-    const from = $('from').value, to = $('to').value, arb = $('arb').value, dep = $('dep').value;
-    return inFmt().filter((e) => (y === null || e.year === y) &&
+    const from = $('from').value, to = $('to').value, arb = $('arb').value, dep = $('dep').value, mo = $('month').value;
+    return inFmt().filter((e) => (y === null || e.year === y) && (!mo || e.month === +mo) &&
       (!cap || (e.cap !== null) === (cap === '1')) &&
       (!from || e.start >= from) && (!to || e.start <= to) &&
       (!arb || e.arb === arb) && (!dep || e.dep === dep) &&
@@ -152,17 +153,60 @@ function start({ events: ALL }) {
     $('more').hidden = list.length <= shown;
     $('more').textContent = `Show more (${fmtN(Math.min(shown, list.length))} of ${fmtN(list.length)} shown)`;
   }
-  const fresh = () => { shown = STEP; renderEvents(); };
+  // ---- quick date ranges (today is the visitor's local date) ----
+  const iso = (d) => d.toLocaleDateString('en-CA');
+  const today = new Date();
+  const ago = (days, months = 0) => { const d = new Date(today); d.setDate(d.getDate() - days); d.setMonth(d.getMonth() - months); return iso(d); };
+  const PRESETS = {
+    upcoming: ['Upcoming', () => [iso(new Date(today.getTime() + 864e5)), '']],
+    '30d': ['Last 30 days', () => [ago(30), iso(today)]],
+    '12m': ['Last 12 months', () => [ago(0, 12), iso(today)]],
+    thisyear: ['This year', () => [`${today.getFullYear()}-01-01`, `${today.getFullYear()}-12-31`]],
+    lastyear: ['Last year', () => [`${today.getFullYear() - 1}-01-01`, `${today.getFullYear() - 1}-12-31`]],
+  };
+  const activePreset = () => Object.keys(PRESETS).find((k) => PRESETS[k][1]().join() === [$('from').value, $('to').value].join());
+
+  // ---- chips: one per active filter, click to remove ----
+  const SELECTS = { year: 'Year', month: 'Month', cap: 'Rating limit', arb: 'Chief arbiter', dep: 'Deputy' };
+  function renderChips() {
+    const chips = [];
+    const add = (label, value, clear) => chips.push({ label, value, clear });
+    if ($('q').value.trim()) add('Search', $('q').value.trim(), () => ($('q').value = ''));
+    if ($('word').value.trim()) add('Name has', $('word').value.trim(), () => ($('word').value = ''));
+    const p = activePreset();
+    if (p) add('Dates', PRESETS[p][0], () => ($('from').value = $('to').value = ''));
+    else if ($('from').value || $('to').value) add('Dates', `${$('from').value || '…'} to ${$('to').value || '…'}`, () => ($('from').value = $('to').value = ''));
+    for (const [id, label] of Object.entries(SELECTS)) {
+      const s = $(id);
+      if (s.value) add(label, s.selectedOptions[0].textContent.replace(/ \(\d+\)$/, ''), () => (s.value = ''));
+    }
+    $('chips').innerHTML = chips.map((c, i) => `<button type="button" class="chip" data-i="${i}" title="Remove this filter"><b>${c.label}:</b> ${esc(c.value)} <span aria-hidden="true">×</span></button>`).join('');
+    $('chips').onclick = (ev) => { const b = ev.target.closest('.chip'); if (b) { chips[+b.dataset.i].clear(); fresh(); } };
+    document.querySelectorAll('#presets .tbtn').forEach((b) => b.classList.toggle('active', b.dataset.p === p));
+  }
+
+  const fresh = () => { shown = STEP; renderEvents(); renderChips(); };
   function pickYear(y) {
     $('year').value = y;
+    $('from').value = $('to').value = '';
     fresh();
     $('events-sec').scrollIntoView({ behavior: 'smooth' });
   }
   $('more').onclick = () => { shown += STEP; renderEvents(); };
   $('q').oninput = fresh;
-  for (const id of ['word', 'from', 'to', 'year', 'cap', 'arb', 'dep']) $(id).oninput = fresh;
+  for (const id of ['word', 'month', 'cap', 'arb', 'dep']) $(id).oninput = fresh;
+  // a year and a custom date range would fight each other, so picking one clears the other
+  $('year').oninput = () => { $('from').value = $('to').value = ''; fresh(); };
+  for (const id of ['from', 'to']) $(id).oninput = () => { $('year').value = ''; fresh(); };
+  $('presets').onclick = (ev) => {
+    const b = ev.target.closest('button');
+    if (!b) return;
+    [$('from').value, $('to').value] = PRESETS[b.dataset.p][1]();
+    $('year').value = '';
+    fresh();
+  };
   $('showarb').onchange = () => $('events').classList.toggle('show-arb', $('showarb').checked);
-  $('reset').onclick = () => { for (const id of ['q', 'word', 'from', 'to', 'year', 'cap', 'arb', 'dep']) $(id).value = '';
+  $('reset').onclick = () => { for (const id of ['q', 'word', 'from', 'to', 'year', 'month', 'cap', 'arb', 'dep']) $(id).value = '';
     fresh(); };
   onSeg('fmt', () => { renderCharts(); fresh(); });
 
@@ -183,4 +227,5 @@ function start({ events: ALL }) {
 
   renderCharts();
   renderEvents();
+  renderChips();
 }

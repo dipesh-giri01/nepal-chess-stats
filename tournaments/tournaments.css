@@ -97,3 +97,102 @@ td.num {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* grouped filter panel */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  margin: 14px 0 12px;
+}
+
+.filters fieldset {
+  margin: 0;
+  padding: 10px 14px 14px;
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+.filters legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary-strong);
+}
+
+.filters .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 12px;
+}
+
+.filters .field input,
+.filters .field select {
+  min-width: 0;
+  width: 100%;
+  font: 14px 'IBM Plex Sans', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 8px 10px;
+}
+
+.filters .field {
+  flex: 1 1 130px;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.presets .tbtn {
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 999px;
+}
+
+/* active filter chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.chips:empty {
+  display: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  font: 13px 'IBM Plex Sans', sans-serif;
+  color: var(--primary-strong);
+  background: var(--primary-tint);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--primary);
+}
+
+.chip b {
+  font-weight: 600;
+}
+
+.chip span {
+  font-size: 15px;
+  line-height: 1;
+}
