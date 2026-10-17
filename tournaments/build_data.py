@@ -41,6 +41,7 @@ def main(src):
         'n': e['num_players'],
         'org': organizers(e['organizer']),
         'arb': chief_arbiter(e['chief_arbiter']),
+        'dep': chief_arbiter(e['deputy_chief_arbiter']),
         'cap': rating_cap(e['name']),
     } for e in raw]
     events.sort(key=lambda e: (e['start'], e['id']), reverse=True)

@@ -83,21 +83,40 @@
         <h2 id="etitle"></h2>
         <div class="btn-row toolbar">
           <input id="q" type="search" placeholder="Search by name, city, organizer or arbiter…" aria-label="Search tournaments" autocomplete="off" />
-          <select id="year" aria-label="Year"><option value="">All years</option></select>
-          <select id="cap" aria-label="Rating limit">
-            <option value="">With or without rating limit</option>
-            <option value="1">Below-rating events only</option>
-            <option value="0">No rating limit in name</option>
-          </select>
-          <label class="check"><input type="checkbox" id="showarb" /> Show chief arbiter</label>
           <button class="tbtn" id="reset" type="button">Reset</button>
+        </div>
+        <div class="btn-row toolbar">
+          <label class="field">Word in name
+            <input id="word" type="search" placeholder="e.g. memorial" autocomplete="off" />
+          </label>
+          <label class="field">From <input id="from" type="date" /></label>
+          <label class="field">To <input id="to" type="date" /></label>
+          <label class="field">Year
+            <select id="year"><option value="">All years</option></select>
+          </label>
+          <label class="field">Rating limit
+            <select id="cap">
+              <option value="">With or without</option>
+              <option value="1">Below-rating events only</option>
+              <option value="0">No rating limit in name</option>
+            </select>
+          </label>
+        </div>
+        <div class="btn-row toolbar">
+          <label class="field">Chief arbiter
+            <select id="arb"><option value="">Any</option></select>
+          </label>
+          <label class="field">Deputy chief arbiter
+            <select id="dep"><option value="">Any</option></select>
+          </label>
+          <label class="check"><input type="checkbox" id="showarb" /> Show arbiter columns</label>
         </div>
         <div class="table-scroll">
           <table id="events">
             <thead>
               <tr>
                 <th>Start</th><th>Tournament</th><th>City</th><th>Format</th><th>Rating limit</th>
-                <th class="num">Players</th><th>Organizer</th><th class="arb">Chief arbiter</th>
+                <th class="num">Players</th><th>Organizer</th><th class="arb">Chief arbiter</th><th class="arb">Deputy</th>
               </tr>
             </thead>
             <tbody></tbody>

@@ -71,3 +71,29 @@ td.num {
 #events:not(.show-arb) .arb {
   display: none;
 }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  flex: none;
+  min-width: 150px;
+}
+
+.check input {
+  flex: none;
+  padding: 0;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

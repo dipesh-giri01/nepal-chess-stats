@@ -122,20 +122,32 @@ function start({ events: ALL }) {
 
   // ---- tournament list ----
   $('year').innerHTML += [...years].reverse().map((y) => `<option value="${y}">${y}</option>`).join('');
+  // arbiter dropdowns: most active first, with event counts
+  for (const [id, key] of [['arb', 'arb'], ['dep', 'dep']]) {
+    const n = {};
+    ALL.forEach((e) => e[key] && (n[e[key]] = (n[e[key]] || 0) + 1));
+    $(id).innerHTML += Object.entries(n).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([name, c]) => `<option value="${esc(name)}">${esc(name)} (${c})</option>`).join('');
+  }
   const STEP = 100; // rows per 'Show more' click
   let shown = STEP;
   const filtered = () => {
-    const q = $('q').value.trim().toLowerCase(), y = $('year').value ? +$('year').value : null, cap = $('cap').value;
+    const q = $('q').value.trim().toLowerCase(), word = $('word').value.trim().toLowerCase();
+    const y = $('year').value ? +$('year').value : null, cap = $('cap').value;
+    const from = $('from').value, to = $('to').value, arb = $('arb').value, dep = $('dep').value;
     return inFmt().filter((e) => (y === null || e.year === y) &&
       (!cap || (e.cap !== null) === (cap === '1')) &&
-      (!q || `${e.name} ${e.city} ${e.org} ${e.arb}`.toLowerCase().includes(q)));
+      (!from || e.start >= from) && (!to || e.start <= to) &&
+      (!arb || e.arb === arb) && (!dep || e.dep === dep) &&
+      (!word || e.name.toLowerCase().includes(word)) &&
+      (!q || `${e.name} ${e.city} ${e.org} ${e.arb} ${e.dep}`.toLowerCase().includes(q)));
   };
   function renderEvents() {
     const y = $('year').value ? +$('year').value : null, list = filtered();
     $('etitle').textContent = (y === null ? 'All tournaments' : `Tournaments in ${y}`) + ` (${fmtN(list.length)})`;
     $('events').tBodies[0].innerHTML = list.slice(0, shown).map((e) =>
       `<tr><td class="nw">${e.start}</td><td><a href="${fide(e.id)}" target="_blank" rel="noopener">${esc(e.name)}</a></td>` +
-      `<td>${esc(e.city)}</td><td>${e.fmt}</td><td>${e.cap ? 'Below ' + e.cap : ''}</td><td class="num">${e.n ?? ''}</td><td class="org">${esc(e.org)}</td><td class="arb nw">${esc(e.arb)}</td></tr>`).join('');
+      `<td>${esc(e.city)}</td><td>${e.fmt}</td><td>${e.cap ? 'Below ' + e.cap : ''}</td><td class="num">${e.n ?? ''}</td><td class="org">${esc(e.org)}</td><td class="arb nw">${esc(e.arb)}</td><td class="arb nw">${esc(e.dep)}</td></tr>`).join('');
     $('empty').hidden = list.length > 0;
     $('more').hidden = list.length <= shown;
     $('more').textContent = `Show more (${fmtN(Math.min(shown, list.length))} of ${fmtN(list.length)} shown)`;
@@ -148,9 +160,10 @@ function start({ events: ALL }) {
   }
   $('more').onclick = () => { shown += STEP; renderEvents(); };
   $('q').oninput = fresh;
-  $('year').onchange = $('cap').onchange = fresh;
+  for (const id of ['word', 'from', 'to', 'year', 'cap', 'arb', 'dep']) $(id).oninput = fresh;
   $('showarb').onchange = () => $('events').classList.toggle('show-arb', $('showarb').checked);
-  $('reset').onclick = () => { $('q').value = $('year').value = $('cap').value = ''; fresh(); };
+  $('reset').onclick = () => { for (const id of ['q', 'word', 'from', 'to', 'year', 'cap', 'arb', 'dep']) $(id).value = '';
+    fresh(); };
   onSeg('fmt', () => { renderCharts(); fresh(); });
 
   // ---- Excel export: every tournament matching the filters, not just the rows shown ----
@@ -158,11 +171,11 @@ function start({ events: ALL }) {
     const rows = filtered().map((e) => ({
       Start: e.start, End: e.end, Tournament: e.name, City: e.city, Format: e.fmt,
       'Rating limit': e.cap ? 'Below ' + e.cap : '', Players: e.n ?? '', Organizer: e.org,
-      'Chief arbiter': e.arb, 'FIDE page': fide(e.id),
+      'Chief arbiter': e.arb, 'Deputy chief arbiter': e.dep, 'FIDE page': fide(e.id),
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
-    rows.forEach((_, i) => { const c = ws['J' + (i + 2)]; if (c) c.l = { Target: c.v }; }); // clickable FIDE link
-    ws['!cols'] = [10, 10, 60, 24, 10, 12, 8, 30, 24, 50].map((wch) => ({ wch }));
+    rows.forEach((_, i) => { const c = ws['K' + (i + 2)]; if (c) c.l = { Target: c.v }; }); // clickable FIDE link
+    ws['!cols'] = [10, 10, 60, 24, 10, 12, 8, 30, 24, 24, 50].map((wch) => ({ wch }));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Tournaments');
     XLSX.writeFile(wb, 'nepal_rated_tournaments.xlsx');
